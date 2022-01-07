@@ -1,0 +1,53 @@
+{
+  "tasks": [
+    {
+      "name": "commit-message-linter",
+      "command": "dotnet",
+      "args": ["husky", "exec", ".husky/csx/commit-lint.csx", "${args}"]
+    },
+    {
+      "name": "dotnet-format",
+      "group": "pre-commit",
+      "command": "dotnet",
+      "args": ["dotnet-format", "--include", "${staged}"],
+      "include": ["**/*.cs", "**/*.vb"]
+    },
+    {
+      "name": "eslint",
+      "group": "pre-commit",
+      "pathMode": "absolute",
+      "cwd": "Client",
+      "command": "npm",
+      "args": ["run", "lint", "${staged}"],
+      "include": ["**/*.ts", "**/*.vue", "**/*.js"]
+    },
+    {
+      "name": "prettier",
+      "group": "pre-commit",
+      "pathMode": "absolute",
+      "cwd": "Client",
+      "command": "npx",
+      "args": ["prettier", "--write", "${staged}"],
+      "include": [
+        "**/*.ts",
+        "**/*.vue",
+        "**/*.js",
+        "**/*.json",
+        "**/*.yml",
+        "**/*.css",
+        "**/*.scss"
+      ]
+    },
+    {
+      "name": "Test",
+      "group": "pre-commit",
+      "output": "always",
+      "command": "bash",
+      "args": ["build.sh", "--target", "Test"],
+      "windows": {
+        "command": "pwsh",
+        "args": ["build.ps1", "--Target", "Test"]
+      }
+    }
+  ]
+}
