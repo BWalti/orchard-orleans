@@ -3,7 +3,6 @@ using System.IO;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
-using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
@@ -18,21 +17,23 @@ namespace CloudBuild
 {
     [CheckBuildProjectConfigurations]
     [ShutdownDotNetAfterServerBuild]
-    [UnsetVisualStudioEnvironmentVariables]
-    [UseUserSecrets]
+    [UseUserSecrets(Priority = 300)]
     partial class Build : NukeBuild
     {
-        [Parameter("ASPNET Version")] readonly string AspNetVersion = "6.0";
+        [Parameter("ASPNET Version")]
+        readonly string AspNetVersion = "6.0";
 
         [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
         readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
         // [GitRepository] readonly GitRepository GitRepository;
-        [GitVersion] readonly GitVersion GitVersion;
+        [GitVersion]
+        readonly GitVersion GitVersion;
 
         readonly IEnumerable<string> MainProjects = new List<string> { "Silo", "MultiTenantApplication" }.AsReadOnly();
 
-        [Solution] readonly Solution Solution;
+        [Solution]
+        readonly Solution Solution;
 
         AbsolutePath SourceDirectory => RootDirectory / "src";
         AbsolutePath TestsDirectory => RootDirectory / "tests";

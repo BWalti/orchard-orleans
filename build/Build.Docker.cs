@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Docker;
@@ -9,17 +8,18 @@ namespace CloudBuild
 {
     public partial class Build
     {
+        [Secret]
+        [Parameter("Docker access token for pushing image.")]
+        readonly string DockerAccessToken;
+
         [Parameter("Publish main images to repository")]
         readonly string DockerRepositoryNamespace;
 
+        [Parameter("Docker username for pushing image.")]
+        readonly string DockerUsername;
+
         [Parameter("Image Tag")]
         readonly string ImageTag = "dev";
-
-        [Parameter("Docker access token for pushing image.")]
-        string DockerAccessToken => Environment.GetEnvironmentVariable(nameof(DockerAccessToken));
-
-        [Parameter("Docker username for pushing image.")]
-        string DockerUsername => Environment.GetEnvironmentVariable(nameof(DockerUsername));
 
         Target DockerTemplate => _ => _
             .DependsOn(Publish)
