@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/aspnet:{ASPNET_VERSION}-alpine
+EXPOSE 5000
+WORKDIR /app
+
+# Add icu-libs (https://github.com/dotnet/SqlClient/issues/220)
+RUN apk add --no-cache icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Select non-root port
+ENV ASPNETCORE_URLS=http://+:5000
+
+# Create a www-data user
+RUN adduser -S www-data -G www-data
+
+# Do not run as root user
+RUN chown -R www-data:www-data /app
+USER www-data
+
+ENTRYPOINT ["dotnet", "{APPNAME}.dll"]
+
+COPY [".", "/app"]

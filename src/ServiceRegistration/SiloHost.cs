@@ -1,0 +1,1 @@
+public record SiloHost(string Host, int Port);

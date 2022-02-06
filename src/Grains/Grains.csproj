@@ -7,14 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AMQPNetLite" Version="2.4.3" />
+    <PackageReference Include="AMQPNetLite.Serialization" Version="2.4.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.5.1">
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.5.1" />
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.0" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.6.0" />
   </ItemGroup>
 
   <ItemGroup>

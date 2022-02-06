@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.cspr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A735F6A2-6F3F-43B8-AE55-FE7E4D47646F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrainInterfaces", "src\GrainInterfaces\GrainInterfaces.csproj", "{C8EEF616-61FD-4A3D-9C0F-AD06848D5F0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrainInterfaces", "src\GrainInterfaces\GrainInterfaces.csproj", "{C8EEF616-61FD-4A3D-9C0F-AD06848D5F0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grains", "src\Grains\Grains.csproj", "{4B5EB7BA-B8CE-40E8-8A02-2797B1CC6E41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grains", "src\Grains\Grains.csproj", "{4B5EB7BA-B8CE-40E8-8A02-2797B1CC6E41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silo", "src\Silo\Silo.csproj", "{88520DE2-FC29-4283-AA8B-4BD1F5572DA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silo", "src\Silo\Silo.csproj", "{88520DE2-FC29-4283-AA8B-4BD1F5572DA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Module1", "src\Module1\Module1.csproj", "{87330ED7-ED16-428E-B6FA-33B33CDD0809}"
 EndProject
@@ -30,6 +30,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{67BB427E-BD13-48ED-A710-C3440AA574A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{B1DE844D-1F6C-4049-A33F-92C44E8DE9DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A0BD46B-5EAC-423B-B40E-9CB1A17D7A67}"
+	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		GitVersion.yml = GitVersion.yml
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceRegistration", "src\ServiceRegistration\ServiceRegistration.csproj", "{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +82,10 @@ Global
 		{E29C5F8B-8618-468C-9506-F48E43F7379F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E29C5F8B-8618-468C-9506-F48E43F7379F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E29C5F8B-8618-468C-9506-F48E43F7379F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +102,7 @@ Global
 		{E29C5F8B-8618-468C-9506-F48E43F7379F} = {67BB427E-BD13-48ED-A710-C3440AA574A1}
 		{67BB427E-BD13-48ED-A710-C3440AA574A1} = {527D2EFA-BA9D-443F-8063-60A9A6A3B671}
 		{B1DE844D-1F6C-4049-A33F-92C44E8DE9DD} = {527D2EFA-BA9D-443F-8063-60A9A6A3B671}
+		{DEBC4D94-BC0D-4B8F-B05E-7FD5F11E292A} = {527D2EFA-BA9D-443F-8063-60A9A6A3B671}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98E97B4F-BF5C-4FB0-AE7A-5B436BE40B82}

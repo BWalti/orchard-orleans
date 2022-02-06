@@ -52,6 +52,16 @@
         }
     */
   "MultiProjectConfigurations": {
+    "Build": {
+      "Projects": {
+        "_build": {}
+      }
+    },
+    "Silo": {
+      "Projects": {
+        "Silo": {}
+      }
+    },
     "Api + Silo": {
       "Projects": {
         "MultiTenantApplication": {},

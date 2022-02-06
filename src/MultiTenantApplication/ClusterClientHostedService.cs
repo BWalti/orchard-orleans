@@ -6,7 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Clustering.Kubernetes;
 using Orleans.Configuration;
+using Orleans.Hosting;
 using Orleans.Runtime;
 
 namespace MultiTenantApplication;
@@ -15,21 +17,35 @@ public class ClusterClientHostedService : IHostedService
 {
     private readonly ILogger<ClusterClientHostedService> logger;
 
-    public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider,
-        IConfiguration config)
+    public ClusterClientHostedService(
+        ILogger<ClusterClientHostedService> logger,
+        ILoggerProvider loggerProvider,
+        IConfiguration config,
+        IHostEnvironment environment)
     {
         this.logger = logger;
-        Client = new ClientBuilder()
+        var builder = new ClientBuilder()
             .ConfigureAppConfiguration(builder => builder.AddConfiguration(config))
-            .UseLocalhostClustering()
-            .Configure<ClusterOptions>(options =>
-            {
-                options.ClusterId = "dev";
-                options.ServiceId = "OrleansBasics";
-            })
             .ConfigureApplicationParts(parts => { parts.AddApplicationPart(typeof(IHello).Assembly).WithReferences(); })
-            .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
-            .Build();
+            .ConfigureLogging(builder => builder.AddProvider(loggerProvider));
+
+        if (environment.IsDevelopment())
+        {
+            builder
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "OrleansBasics";
+                })
+                .UseLocalhostClustering();
+        }
+        else
+        {
+            builder.ConfigureServices(services => services.UseKubernetesHosting());
+            builder.UseKubeGatewayListProvider();
+        }
+
+        Client = builder.Build();
     }
 
     public IClusterClient Client { get; }

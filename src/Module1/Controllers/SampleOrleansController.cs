@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections;
+using System.Text;
+using System.Threading.Tasks;
 using GrainInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Orleans;
@@ -22,5 +25,19 @@ public class SampleOrleansController : ControllerBase
         var helloGrain = this._orleansClient.GetGrain<IHello>("any-id");
 
         return await helloGrain.SayHello("World");
+    }
+
+    [Route("env")]
+    public string GetEnv()
+    {
+        var environmentVariables = Environment.GetEnvironmentVariables();
+        var builder = new StringBuilder();
+
+        foreach (DictionaryEntry entry in environmentVariables)
+        {
+            builder.AppendLine($"{entry.Key}: {entry.Value}");
+        }
+
+        return builder.ToString();
     }
 }
