@@ -18,4 +18,8 @@
     <Orleans_CodeGenInputs Remove="IHello.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Orleans_CodeGenInputs Remove="IStorageTest.cs" />
+  </ItemGroup>
+
 </Project>

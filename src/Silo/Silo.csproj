@@ -10,12 +10,18 @@
 	<ItemGroup>
 		<PackageReference Include="AMQPNetLite" Version="2.4.3" />
 		<PackageReference Include="AMQPNetLite.Serialization" Version="2.4.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Orleans.Hosting.Kubernetes" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="3.6.0" />
 		<PackageReference Include="Microsoft.Tye.Extensions.Configuration" Version="0.10.0-alpha.21420.1" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
 		<PackageReference Include="Orleans.Clustering.Kubernetes" Version="2.1.0" />
 		<PackageReference Include="Orleans.Clustering.Redis" Version="3.2.1" />
 		<PackageReference Include="Orleans.Persistence.Redis" Version="3.2.1" />
@@ -25,6 +31,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\GrainInterfaces\GrainInterfaces.csproj" />
 		<ProjectReference Include="..\Grains\Grains.csproj" />
+		<ProjectReference Include="..\Orleans.Persistence.EntityFramework\Orleans.Persistence.EntityFramework.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
