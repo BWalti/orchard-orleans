@@ -87,7 +87,7 @@ await app.StartAsync();
 
 // docker run --name orleans-demo -p 5432:5432 -e POSTGRES_PASSWORD=secretPassword -e POSTGRES_USER=demo -e POSTGRES_DB=demo -d postgres
 var factory = app.Services.GetRequiredService<IGrainFactory>();
-var init = factory.GetGrain<IStorageTest>(Guid.Empty);
+var init = factory.GetGrain<IStorageTest>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
 var result = await init.IncreaseCount();
 
 await app.WaitForShutdownAsync();

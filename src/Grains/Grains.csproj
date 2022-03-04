@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GrainInterfaces\GrainInterfaces.csproj" />
+    <ProjectReference Include="..\Orleans.Persistence.EntityFramework\Orleans.Persistence.EntityFramework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

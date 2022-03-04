@@ -24,7 +24,7 @@ namespace Silo.Migrations
 
             modelBuilder.Entity("Grains.CounterState", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 

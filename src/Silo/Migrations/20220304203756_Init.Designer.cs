@@ -12,7 +12,7 @@ using Silo;
 namespace Silo.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20220304103018_Init")]
+    [Migration("20220304203756_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace Silo.Migrations
 
             modelBuilder.Entity("Grains.CounterState", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 

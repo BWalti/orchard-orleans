@@ -1,4 +1,6 @@
-﻿namespace Grains;
+﻿using Orleans.Persistence.EntityFramework;
+
+namespace Grains;
 
 using GrainInterfaces;
 
@@ -22,9 +24,9 @@ public class StorageTestGrain : Grain, IStorageTest
     }
 }
 
-public class CounterState
+public class CounterState : IHasGuidId
 {
-    public Guid Id { get; set; }
+    public Guid? Id { get; set; }
 
     public int Counter { get; set; }
 }

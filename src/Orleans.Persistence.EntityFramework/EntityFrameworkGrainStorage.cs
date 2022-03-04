@@ -27,20 +27,38 @@ public class EntityFrameworkGrainStorage : IGrainStorage, ILifecycleParticipant<
         if (result != null)
         {
             grainState.State = result;
+            grainState.RecordExists = true;
         }
     }
 
     public async Task WriteStateAsync(string grainType, GrainReference grainReference, IGrainState grainState)
     {
         var repo = services.GetRequiredServiceByName<IRepositoryCore>(grainState.State.GetType().Name);
-        var current = await repo.ReadAsync(grainReference.GrainIdentity.PrimaryKey, CancellationToken.None);
-        if (current == null)
+        if (grainState.RecordExists)
         {
-            await repo.AddAsync(grainState.State, CancellationToken.None);
+            await repo.UpdateAsync(grainReference.GrainIdentity.PrimaryKey, grainState.State, CancellationToken.None);
         }
         else
         {
-            await repo.UpdateAsync(grainReference.GrainIdentity.PrimaryKey, grainState.State, CancellationToken.None);
+            switch (grainState.State)
+            {
+                case IHasGuidId guidId:
+                    guidId.Id = grainReference.GrainIdentity.PrimaryKey;
+                    break;
+
+                case IHasLongId intId:
+                    intId.Id = grainReference.GrainIdentity.PrimaryKeyLong;
+                    break;
+
+                case IHasStringId stringId:
+                    stringId.Id = grainReference.GrainIdentity.IdentityString;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(grainState.State));
+            }
+
+            await repo.AddAsync(grainState.State, CancellationToken.None);
         }
     }
 
