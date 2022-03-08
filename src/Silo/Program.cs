@@ -3,7 +3,6 @@
 using GrainInterfaces;
 
 using Grains;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,21 +31,24 @@ var app = Host
     .ConfigureAppConfiguration(ConfigureDelegate)
     .ConfigureServices((hostContext, services) =>
     {
-        //services.AddDbContext<TestDbContext>((services, options) =>
-        //{
-        //    var config = services.GetRequiredService<IConfiguration>();
-        //    options.UseNpgsql(config.GetConnectionString("TestContext"));
-        //});
         services.AddDbContextFactory<TestDbContext>((services, builder) =>
         {
             var config = services.GetRequiredService<IConfiguration>();
             builder.UseNpgsql(config.GetConnectionString("TestContext"));
         });
 
-        services.AddSingletonNamedService<IRepositoryCore, RepositoryCore<CounterState, Guid>>(nameof(CounterState));
-        services.AddSingletonNamedService<IRepository<CounterState, Guid>, Repository<CounterState, Guid, TestDbContext>>(nameof(CounterState));
+        //services.AddMarten(options =>
+        //{
+        //    options.Connection(hostContext.Configuration.GetConnectionString("TestContext"));
 
-        //services.AddSingleton<IQueueWorkerClient, QueueWorkerClient>();
+        //    if (hostContext.HostingEnvironment.IsDevelopment())
+        //    {
+        //        options.AutoCreateSchemaObjects = AutoCreate.All;
+        //    }
+        //});
+
+        services.AddRepository<CounterState, TestDbContext, Guid?>();
+        services.AddRepository<EnergyConsumption, TestDbContext, long?>();
     })
     .UseOrleans((context, builder) =>
     {
@@ -58,7 +60,14 @@ var app = Host
                                                     .GetRequiredServiceByName<IGrainStorage>(n));
         });
 
-        builder.UseDashboard();
+        builder.AddAdoNetGrainStorageAsDefault(options =>
+        {
+            options.Invariant = "Npgsql";
+            options.ConnectionString = context.Configuration.GetConnectionString("TestContext");
+        });
+
+        builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
+        //builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
 
         builder
             .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(HelloGrain).Assembly).WithReferences())
@@ -66,6 +75,8 @@ var app = Host
 
         if (context.HostingEnvironment.IsDevelopment())
         {
+            builder.UseDashboard();
+
             builder
                 .Configure<ClusterOptions>(options =>
                 {
@@ -84,10 +95,49 @@ var app = Host
     .Build();
 
 await app.StartAsync();
-
-// docker run --name orleans-demo -p 5432:5432 -e POSTGRES_PASSWORD=secretPassword -e POSTGRES_USER=demo -e POSTGRES_DB=demo -d postgres
-var factory = app.Services.GetRequiredService<IGrainFactory>();
-var init = factory.GetGrain<IStorageTest>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
-var result = await init.IncreaseCount();
-
+await ProofOfConcepts(app.Services);
 await app.WaitForShutdownAsync();
+
+async Task ProofOfConcepts(IServiceProvider serviceProvider)
+{
+    var factory = serviceProvider.GetRequiredService<IGrainFactory>();
+    //var grain = factory.GetGrain<ISmartMeterOverviewGrain>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
+
+    //var state = await grain.GetState();
+    //await grain.AddMeasurement(100);
+    //state = await grain.GetState();
+
+    var init = factory.GetGrain<IStorageTest>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
+    var result = await init.IncreaseCount();
+
+    //var smartMeterIds = Enumerable.Range(1, 5).ToArray();
+    //var smartMeterings = Task.Factory.StartNew(async () =>
+    //{
+    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
+    //    while (true)
+    //    {
+    //        foreach (var meterGrain in grains)
+    //        {
+    //            await meterGrain.IncrementUsage(Random.Shared.Next(50, 300));
+    //        }
+
+    //        await Task.Delay(TimeSpan.FromMilliseconds(500));
+    //    }
+    //});
+
+    //var readOuts = Task.Factory.StartNew(async () =>
+    //{
+    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
+    //    while (true)
+    //    {
+    //        int overallUsage = 0;
+    //        foreach (var meterGrain in grains)
+    //        {
+    //            overallUsage += await meterGrain.OverallUsage();
+    //        }
+
+    //        Console.WriteLine($"=== Overall Usage: {overallUsage} kWh");
+    //        await Task.Delay(TimeSpan.FromSeconds(5));
+    //    }
+    //});
+}

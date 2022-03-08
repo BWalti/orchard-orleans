@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Silo;
@@ -11,9 +12,10 @@ using Silo;
 namespace Silo.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    partial class TestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220307075049_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,25 +39,6 @@ namespace Silo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CounterStates");
-                });
-
-            modelBuilder.Entity("Grains.EnergyConsumption", b =>
-                {
-                    b.Property<long?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long?>("Id"));
-
-                    b.Property<int>("ETag")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("KwH")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EnergyConsumptions");
                 });
 #pragma warning restore 612, 618
         }

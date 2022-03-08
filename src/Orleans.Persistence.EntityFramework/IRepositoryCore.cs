@@ -2,11 +2,11 @@
 
 public interface IRepositoryCore
 {
-    Task<object> ReadAsync(object key, CancellationToken cancellationToken);
+    Task<IProvideETag?> ReadAsync(object key, CancellationToken cancellationToken);
 
-    Task<object> AddAsync(object entity, CancellationToken cancellationToken);
+    Task<IProvideETag> AddAsync(IProvideETag entity, CancellationToken cancellationToken);
 
-    Task<object> UpdateAsync(object key, object entity, CancellationToken cancellationToken);
+    Task<IProvideETag> UpdateAsync(object key, IProvideETag entity, CancellationToken cancellationToken);
 
-    Task DeleteAsync(object entity, CancellationToken cancellationToken);
+    Task DeleteAsync(IProvideETag entity, CancellationToken cancellationToken);
 }

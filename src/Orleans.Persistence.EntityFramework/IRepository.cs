@@ -1,7 +1,7 @@
 ﻿namespace Orleans.Persistence.EntityFramework;
 
 public interface IRepository<TEntity, TPrimaryKey>
-where TEntity : class
+where TEntity : class, IProvideETag
 {
     Task<TEntity?> ReadAsync(TPrimaryKey key, CancellationToken cancellationToken);
 

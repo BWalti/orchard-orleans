@@ -24,9 +24,7 @@ public class StorageTestGrain : Grain, IStorageTest
     }
 }
 
-public class CounterState : IHasGuidId
+public class CounterState : EfPersistableState<Guid?>
 {
-    public Guid? Id { get; set; }
-
     public int Counter { get; set; }
 }

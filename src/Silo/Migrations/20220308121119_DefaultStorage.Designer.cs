@@ -12,8 +12,8 @@ using Silo;
 namespace Silo.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20220304203756_Init")]
-    partial class Init
+    [Migration("20220308121119_DefaultStorage")]
+    partial class DefaultStorage
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -33,9 +33,31 @@ namespace Silo.Migrations
                     b.Property<int>("Counter")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ETag")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("CounterStates");
+                });
+
+            modelBuilder.Entity("Grains.EnergyConsumption", b =>
+                {
+                    b.Property<long?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long?>("Id"));
+
+                    b.Property<int>("ETag")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("KwH")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EnergyConsumptions");
                 });
 #pragma warning restore 612, 618
         }

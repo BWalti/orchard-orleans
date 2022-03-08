@@ -3,40 +3,35 @@
 namespace Orleans.Persistence.EntityFramework;
 
 public class RepositoryCore<TEntity, TPrimaryKey> : IRepositoryCore
-    where TEntity : class
+    where TEntity : class, IProvideETag
 {
-    readonly IServiceProvider services;
+    readonly IRepository<TEntity, TPrimaryKey> innerRepository;
 
     public RepositoryCore(IServiceProvider services)
     {
-        this.services = services;
+        innerRepository = services.GetRequiredServiceByName<IRepository<TEntity, TPrimaryKey>>(typeof(TEntity).Name);
     }
 
-    public async Task<object> ReadAsync(object key, CancellationToken cancellationToken)
+    public async Task<IProvideETag?> ReadAsync(object key, CancellationToken cancellationToken)
     {
-        var result = await GetTypedRepository().ReadAsync((TPrimaryKey)key, cancellationToken);
+        var result = await innerRepository.ReadAsync((TPrimaryKey)key, cancellationToken);
         return result;
     }
 
-    public async Task<object> AddAsync(object entity, CancellationToken cancellationToken)
+    public async Task<IProvideETag> AddAsync(IProvideETag entity, CancellationToken cancellationToken)
     {
-        var result = await GetTypedRepository().AddAsync((TEntity)entity, cancellationToken);
+        var result = await innerRepository.AddAsync((TEntity)entity, cancellationToken);
         return result;
     }
 
-    public async Task<object> UpdateAsync(object key, object entity, CancellationToken cancellationToken)
+    public async Task<IProvideETag> UpdateAsync(object key, IProvideETag entity, CancellationToken cancellationToken)
     {
-        var result = await GetTypedRepository().UpdateAsync((TPrimaryKey)key, (TEntity)entity, cancellationToken);
+        var result = await innerRepository.UpdateAsync((TPrimaryKey)key, (TEntity)entity, cancellationToken);
         return result;
     }
 
-    public async Task DeleteAsync(object entity, CancellationToken cancellationToken)
+    public async Task DeleteAsync(IProvideETag entity, CancellationToken cancellationToken)
     {
-        await GetTypedRepository().DeleteAsync((TEntity)entity, cancellationToken);
-    }
-
-    private IRepository<TEntity, TPrimaryKey> GetTypedRepository()
-    {
-        return services.GetRequiredServiceByName<IRepository<TEntity, TPrimaryKey>>(typeof(TEntity).Name);
+        await innerRepository.DeleteAsync((TEntity)entity, cancellationToken);
     }
 }

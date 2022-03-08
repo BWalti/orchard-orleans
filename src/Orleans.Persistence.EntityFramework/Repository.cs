@@ -3,7 +3,7 @@
 namespace Orleans.Persistence.EntityFramework;
 
 public class Repository<TEntity, TPrimaryKey, TDbContext> : IRepository<TEntity, TPrimaryKey>
-    where TEntity : class
+    where TEntity : class, IProvideETag
     where TDbContext : DbContext
 {
     readonly IDbContextFactory<TDbContext> dbContextFactory;
@@ -13,7 +13,7 @@ public class Repository<TEntity, TPrimaryKey, TDbContext> : IRepository<TEntity,
         this.dbContextFactory = dbContextFactory;
     }
 
-    public async Task<TEntity> ReadAsync(TPrimaryKey key, CancellationToken cancellationToken)
+    public async Task<TEntity?> ReadAsync(TPrimaryKey key, CancellationToken cancellationToken)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
         var result = await dbContext.FindAsync<TEntity>(key);
@@ -31,12 +31,18 @@ public class Repository<TEntity, TPrimaryKey, TDbContext> : IRepository<TEntity,
         return result.Entity;
     }
 
-    public async Task<TEntity> UpdateAsync(TPrimaryKey key, TEntity entity, CancellationToken cancellationToken)
+    public async Task<TEntity> UpdateAsync(TPrimaryKey key, TEntity entity,
+        CancellationToken cancellationToken)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var result = dbContext.Update(entity);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
+        // todo: before updating, check ETag first? inside one db call would probably be ideal, generate new ETag while updating..
+        // pseudo-sql: update {collectionName} set {...fields}, ETag++ where ETag == ETag and Id == Id ..?
+        var result = dbContext.Update(entity);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
         return result.Entity;
     }
 

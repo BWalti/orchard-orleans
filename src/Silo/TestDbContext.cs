@@ -12,6 +12,8 @@ public class TestDbContext : DbContext
 
     public DbSet<CounterState> CounterStates { get; set; }
 
+    public DbSet<EnergyConsumption> EnergyConsumptions { get; set; }
+
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     //{
     //    base.OnConfiguring(optionsBuilder);

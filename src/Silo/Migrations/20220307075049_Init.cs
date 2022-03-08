@@ -14,7 +14,8 @@ namespace Silo.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Counter = table.Column<int>(type: "integer", nullable: false)
+                    Counter = table.Column<int>(type: "integer", nullable: false),
+                    ETag = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

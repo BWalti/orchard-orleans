@@ -22,7 +22,7 @@ public class SampleOrleansController : ControllerBase
     [HttpGet]
     public async Task<string> Get()
     {
-        var helloGrain = this._orleansClient.GetGrain<IHello>("any-id");
+        var helloGrain = _orleansClient.GetGrain<IHello>("any-id");
 
         return await helloGrain.SayHello("World");
     }
