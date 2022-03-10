@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using Orleans.EventSourcing;
-using Orleans.EventSourcing.CustomStorage;
 using Orleans.Runtime;
 using Orleans.Storage;
 
@@ -8,6 +6,8 @@ namespace Orleans.Persistence.EntityFramework;
 
 public class EntityFrameworkGrainStorage : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
 {
+    public const string DefaultProviderName = nameof(EntityFrameworkGrainStorage);
+
     readonly IServiceProvider _services;
     readonly string _storageName;
 
@@ -123,7 +123,7 @@ public class EntityFrameworkGrainStorage : IGrainStorage, ILifecycleParticipant<
 //{
 //    public async Task<KeyValuePair<int, TGrainState>> ReadStateFromStorage()
 //    {
-//        var grainStorage = ServiceProvider.GetRequiredServiceByName<IGrainStorage>("EF");
+//        var grainStorage = ServiceProvider.GetRequiredServiceByName<IGrainStorage>(EntityFrameworkGrainStorage.DefaultProviderName);
 
 //        var grainState = new GrainState<TGrainState>(State);
 //        await grainStorage.ReadStateAsync(typeof(TGrainState).Name, GrainReference, grainState);
@@ -133,7 +133,7 @@ public class EntityFrameworkGrainStorage : IGrainStorage, ILifecycleParticipant<
 
 //    public async Task<bool> ApplyUpdatesToStorage(IReadOnlyList<TEventBase> updates, int expectedversion)
 //    {
-//        var grainStorage = ServiceProvider.GetRequiredServiceByName<IGrainStorage>("EF");
+//        var grainStorage = ServiceProvider.GetRequiredServiceByName<IGrainStorage>(EntityFrameworkGrainStorage.DefaultProviderName);
 
 //        var grainState = new GrainState<TGrainState>(State);
 //        await grainStorage.WriteStateAsync(typeof(TGrainState).Name, GrainReference, grainState);

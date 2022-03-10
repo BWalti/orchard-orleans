@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics;
-
-using GrainInterfaces;
-
 using Grains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,60 +10,29 @@ using Orleans.Clustering.Kubernetes;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using Orleans.Persistence.EntityFramework;
-using Orleans.Runtime;
-using Orleans.Storage;
-
 using Silo;
-
-static void ConfigureDelegate(IConfigurationBuilder configurationBuilder)
-{
-    configurationBuilder.AddJsonFile("appsettings.json");
-}
 
 Activity.DefaultIdFormat = ActivityIdFormat.W3C;
 
 var app = Host
     .CreateDefaultBuilder(args)
-    .ConfigureHostConfiguration(ConfigureDelegate)
-    .ConfigureAppConfiguration(ConfigureDelegate)
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddDbContextFactory<TestDbContext>((services, builder) =>
+        services.AddDbContextFactory<TestDbContext>(builder =>
         {
-            var config = services.GetRequiredService<IConfiguration>();
-            builder.UseNpgsql(config.GetConnectionString("TestContext"));
+            builder.UseNpgsql(hostContext.Configuration.GetConnectionString("DbContext"));
         });
 
-        //services.AddMarten(options =>
-        //{
-        //    options.Connection(hostContext.Configuration.GetConnectionString("TestContext"));
-
-        //    if (hostContext.HostingEnvironment.IsDevelopment())
-        //    {
-        //        options.AutoCreateSchemaObjects = AutoCreate.All;
-        //    }
-        //});
-
-        services.AddRepository<CounterState, TestDbContext, Guid?>();
-        services.AddRepository<EnergyConsumption, TestDbContext, long?>();
+        // register Entity Framework Storage and all EF persistable grain state:
+        services
+            .AddOrleansEntityFrameworkGrainStorage<TestDbContext>()
+            .AddRepository<CounterState, Guid?>()
+            .AddRepository<EnergyConsumption, long?>();
     })
     .UseOrleans((context, builder) =>
     {
-        builder.ConfigureServices(collection =>
-        {
-            collection.AddSingletonNamedService<IGrainStorage>("EF", EntityFrameworkGrainStorage.Create)
-                      .AddSingletonNamedService("EF",
-                                                (s, n) => (ILifecycleParticipant<ISiloLifecycle>)s
-                                                    .GetRequiredServiceByName<IGrainStorage>(n));
-        });
-
-        builder.AddAdoNetGrainStorageAsDefault(options =>
-        {
-            options.Invariant = "Npgsql";
-            options.ConnectionString = context.Configuration.GetConnectionString("TestContext");
-        });
-
         builder.AddLogStorageBasedLogConsistencyProviderAsDefault();
+        // WIP: maybe we don't need this anyway:
         //builder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
 
         builder
@@ -76,6 +42,14 @@ var app = Host
         if (context.HostingEnvironment.IsDevelopment())
         {
             builder.UseDashboard();
+
+            // backup "default" storage, should only be used during development
+            // as performance might not be production ready:
+            builder.AddAdoNetGrainStorageAsDefault(options =>
+            {
+                options.Invariant = "Npgsql";
+                options.ConnectionString = context.Configuration.GetConnectionString("DbContext");
+            });
 
             builder
                 .Configure<ClusterOptions>(options =>
@@ -94,50 +68,61 @@ var app = Host
     .UseConsoleLifetime()
     .Build();
 
+var environment = app.Services.GetRequiredService<IHostEnvironment>();
+if (environment.IsDevelopment())
+{
+    // during development we might auto migrate the database:
+    using var scope = app.Services.CreateScope();
+    await using var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 await app.StartAsync();
-await ProofOfConcepts(app.Services);
+//await ProofOfConcepts(app.Services);
 await app.WaitForShutdownAsync();
 
-async Task ProofOfConcepts(IServiceProvider serviceProvider)
-{
-    var factory = serviceProvider.GetRequiredService<IGrainFactory>();
-    //var grain = factory.GetGrain<ISmartMeterOverviewGrain>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
+//async Task ProofOfConcepts(IServiceProvider serviceProvider)
+//{
+//    var factory = serviceProvider.GetRequiredService<IGrainFactory>();
 
-    //var state = await grain.GetState();
-    //await grain.AddMeasurement(100);
-    //state = await grain.GetState();
+//    //var grain = factory.GetGrain<ISmartMeterOverviewGrain>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
+//    //await grain.AddMeasurement(100);
 
-    var init = factory.GetGrain<IStorageTest>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
-    var result = await init.IncreaseCount();
+//    //var state = await grain.GetState();
+//    //await grain.AddMeasurement(100);
+//    //state = await grain.GetState();
 
-    //var smartMeterIds = Enumerable.Range(1, 5).ToArray();
-    //var smartMeterings = Task.Factory.StartNew(async () =>
-    //{
-    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
-    //    while (true)
-    //    {
-    //        foreach (var meterGrain in grains)
-    //        {
-    //            await meterGrain.IncrementUsage(Random.Shared.Next(50, 300));
-    //        }
+//    //var init = factory.GetGrain<IStorageTest>(Guid.Parse("0ea2271b-0f80-4534-9421-941fcd4b4f87"));
+//    //var result = await init.IncreaseCount();
 
-    //        await Task.Delay(TimeSpan.FromMilliseconds(500));
-    //    }
-    //});
+//    //var smartMeterIds = Enumerable.Range(1, 5).ToArray();
+//    //var smartMeterings = Task.Factory.StartNew(async () =>
+//    //{
+//    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
+//    //    while (true)
+//    //    {
+//    //        foreach (var meterGrain in grains)
+//    //        {
+//    //            await meterGrain.IncrementUsage(Random.Shared.Next(50, 300));
+//    //        }
 
-    //var readOuts = Task.Factory.StartNew(async () =>
-    //{
-    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
-    //    while (true)
-    //    {
-    //        int overallUsage = 0;
-    //        foreach (var meterGrain in grains)
-    //        {
-    //            overallUsage += await meterGrain.OverallUsage();
-    //        }
+//    //        await Task.Delay(TimeSpan.FromMilliseconds(500));
+//    //    }
+//    //});
 
-    //        Console.WriteLine($"=== Overall Usage: {overallUsage} kWh");
-    //        await Task.Delay(TimeSpan.FromSeconds(5));
-    //    }
-    //});
-}
+//    //var readOuts = Task.Factory.StartNew(async () =>
+//    //{
+//    //    var grains = smartMeterIds.Select(id => factory.GetGrain<ISmartMeterGrain>(id)).ToList();
+//    //    while (true)
+//    //    {
+//    //        int overallUsage = 0;
+//    //        foreach (var meterGrain in grains)
+//    //        {
+//    //            overallUsage += await meterGrain.OverallUsage();
+//    //        }
+
+//    //        Console.WriteLine($"=== Overall Usage: {overallUsage} kWh");
+//    //        await Task.Delay(TimeSpan.FromSeconds(5));
+//    //    }
+//    //});
+//}

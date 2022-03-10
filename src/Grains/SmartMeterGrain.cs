@@ -10,7 +10,7 @@ public class SmartMeterGrain : Grain, ISmartMeterGrain
     readonly IPersistentState<EnergyConsumption> _state;
 
     public SmartMeterGrain(
-        [PersistentState("energyConsumption", "EF")] IPersistentState<EnergyConsumption> state
+        [PersistentState("energyConsumption", EntityFrameworkGrainStorage.DefaultProviderName)] IPersistentState<EnergyConsumption> state
     )
     {
         _state = state;

@@ -11,7 +11,7 @@ public class StorageTestGrain : Grain, IStorageTest
 {
     readonly IPersistentState<CounterState> state;
 
-    public StorageTestGrain([PersistentState("counter", "EF")] IPersistentState<CounterState> state)
+    public StorageTestGrain([PersistentState("counter", EntityFrameworkGrainStorage.DefaultProviderName)] IPersistentState<CounterState> state)
     {
         this.state = state;
     }
